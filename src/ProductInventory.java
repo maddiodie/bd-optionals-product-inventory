@@ -1,3 +1,5 @@
+import org.apache.commons.lang3.ObjectUtils;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +11,7 @@ import java.util.Optional;
  * whether each item is boxed and ready to be shipped.
  */
 public class ProductInventory {
+
     private ProductUtility productUtility;
     private List<Integer> productIDs;
 
@@ -21,7 +24,7 @@ public class ProductInventory {
         //
         // WARNING: DO NOT EDIT THE CONSTRUCTOR
         // Here's why: Typically, it's a good practice to validate constructor inputs.
-        // However in this case, we're specifically asking for validation for these in
+        // However, in this case, we're specifically asking for validation for these in
         // the methods will you be implementing, and the tests won't work correctly if you
         // do the validation here.
         //
@@ -34,11 +37,29 @@ public class ProductInventory {
      * @return Map[Integer, String] of product IDs to product names. Does not include products without names.
      */
     Map<Integer, String> findProductNames() {
-        // TODO: replace stub implementation
-        Map<Integer, String> stubMap = new HashMap<Integer, String>();
-        for (Integer productID : productIDs) {
-            stubMap.put(productID, "");
+        if (productUtility == null) {
+            throw new IllegalArgumentException("productUtility is null");
         }
+        if (productIDs == null) {
+            throw new IllegalArgumentException("productID is null");
+        }
+
+        Map<Integer, String> stubMap = new HashMap<Integer, String>();
+
+        for (Integer productID : productIDs) {
+            String name;
+
+            try {
+                name = productUtility.findProductName(productID);
+            } catch (NullPointerException e) {
+                throw new IllegalArgumentException(productID + " is null.");
+            }
+
+            if (name != null) {
+                stubMap.put(productID, name);
+            }
+        }
+
         return stubMap;
     }
 
@@ -48,8 +69,19 @@ public class ProductInventory {
      * @return Optional[Boolean] containing whether a product is ready to ship.
      */
     Optional<Boolean> isProductReady(Integer productID) {
-        // TODO: replace stub implementation
-        Boolean stubResult = productUtility.isProductReady(0);
+        Boolean stubResult;
+
+        try {
+            stubResult = productUtility.isProductReady(productID);
+        } catch (NullPointerException e) {
+            throw new IllegalArgumentException("The productID was null");
+        }
+
+        if (stubResult == null) {
+            return Optional.empty();
+        }
+
         return Optional.of(stubResult);
     }
+
 }
